@@ -1,51 +1,67 @@
 <?php
 
-namespace App\Http\Controllers\Api\Auth;
+namespace App\Http\Controllers\Api;
 
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Http\Helpers\ApiResponse;
-use Laravel\Sanctum\HasApiTokens;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\Auth\AuthResource;
+use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    use ApiResponse, HasApiTokens, HasFactory, Notifiable;
-
-    public function login (Request $request) {
-        $validator = Validator::make($request->all(),[
-            'email' =>  'required|email',
-            'password' => 'required|min:6|regex:/[0-9]/|regex:/[a-zA-Z]/'
+    // Register
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|min:6',
         ]);
 
-        if($validator->fails()) {
-            return $this->errorResponse($validator->errors(),422);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ]);
+    }
+
+    // Login
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
         }
 
-        $validatedData = $validator->validated();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-        $user = User::where('email',$request->email)->first();
+        return response()->json([
+            'message' => 'Login successful',
+            'token' => $token,
+        ]);
+    }
 
-        if(!$user) {
-            return $this->errorResponse('Your credentials have not served!',404);
-        }
+    // Logout
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
 
-        if(!Hash::check( $validatedData['password'], $user->password )){
-            return $this->errorResponse('Your credential is wrong!',401);
-        }
-
-        $token = $user->createToken('token')->plainTextToken;
-
-        $content = [
-            'user'=> $user,
-            'token' => $token
-        ];
-
-        return $this->successResponse('Login success',new AuthResource($content),200);
+        return response()->json(['message' => 'Logged out']);
     }
 }
