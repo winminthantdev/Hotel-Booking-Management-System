@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -12,26 +12,37 @@ class AuthController extends Controller
 {
     // Register
     public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
+{
+    // Validate incoming request
+    $validated = $request->validate([
+        'name'      => 'required|string|max:255',
+        'email'     => 'required|string|email|max:255|unique:users',
+        'password'  => 'required|string|min:8',
+        'phone'     => 'required|string|max:20',
+        'role'      => 'required|in:Admin,Staff,Tenant',
+        'is_active' => 'required|boolean',
+    ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+    // Create user
+    $user = \App\Models\User::create([
+        'name'      => $validated['name'],
+        'email'     => $validated['email'],
+        'password'  => \Illuminate\Support\Facades\Hash::make($validated['password']),
+        'phone'     => $validated['phone'],
+        'role'      => $validated['role'],
+        'is_active' => $validated['is_active'],
+    ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+    // Create token with Sanctum
+    $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ]);
-    }
+    return response()->json([
+        'status'  => 'success',
+        'message' => 'User registered successfully',
+        'user'    => $user,
+        'token'   => $token,
+    ], 201);
+}
 
     // Login
     public function login(Request $request)
