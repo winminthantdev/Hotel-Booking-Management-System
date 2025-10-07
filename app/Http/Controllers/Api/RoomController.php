@@ -1,3 +1,4 @@
+<?php
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -12,3 +13,6 @@ class RoomController extends Controller
     public function update(Request $request, Room $room) { $room->update($request->all()); return $room; }
     public function destroy(Room $room) { $room->delete(); return response()->json(null,204); }
 }
+
+
+?>

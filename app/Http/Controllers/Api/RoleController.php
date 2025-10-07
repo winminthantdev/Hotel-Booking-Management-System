@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -12,3 +14,6 @@ class RoleController extends Controller
     public function update(Request $request, Role $role) { $role->update($request->all()); return $role; }
     public function destroy(Role $role) { $role->delete(); return response()->json(null,204); }
 }
+
+
+?>

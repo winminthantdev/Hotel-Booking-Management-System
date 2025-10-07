@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -12,3 +14,6 @@ class ServiceController extends Controller
     public function update(Request $request, Service $service) { $service->update($request->all()); return $service; }
     public function destroy(Service $service) { $service->delete(); return response()->json(null,204); }
 }
+
+
+?>

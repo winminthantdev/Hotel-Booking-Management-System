@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -12,3 +14,6 @@ class PermissionController extends Controller
     public function update(Request $request, Permission $permission) { $permission->update($request->all()); return $permission; }
     public function destroy(Permission $permission) { $permission->delete(); return response()->json(null,204); }
 }
+
+
+?>

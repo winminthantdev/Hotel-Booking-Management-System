@@ -1,3 +1,4 @@
+<?php
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -12,3 +13,6 @@ class BookingServiceController extends Controller
     public function update(Request $request, BookingService $bookingService) { $bookingService->update($request->all()); return $bookingService; }
     public function destroy(BookingService $bookingService) { $bookingService->delete(); return response()->json(null,204); }
 }
+
+
+?>

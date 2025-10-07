@@ -1,3 +1,4 @@
+<?php
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -12,3 +13,5 @@ class StaffController extends Controller
     public function update(Request $request, Staff $staff) { $staff->update($request->all()); return $staff; }
     public function destroy(Staff $staff) { $staff->delete(); return response()->json(null,204); }
 }
+
+?>

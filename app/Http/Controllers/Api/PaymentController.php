@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -12,3 +14,6 @@ class PaymentController extends Controller
     public function update(Request $request, Payment $payment) { $payment->update($request->all()); return $payment; }
     public function destroy(Payment $payment) { $payment->delete(); return response()->json(null,204); }
 }
+
+
+?>
