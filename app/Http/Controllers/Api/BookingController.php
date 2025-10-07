@@ -2,47 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 
-class BookingController
+class BookingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+    public function index() { return Booking::with(['user','room'])->get(); }
+    public function store(Request $request) { return Booking::create($request->all()); }
+    public function show(Booking $booking) { return $booking->load(['user','room']); }
+    public function update(Request $request, Booking $booking) { $booking->update($request->all()); return $booking; }
+    public function destroy(Booking $booking) { $booking->delete(); return response()->json(null,204); }
 }
+
+?>
